@@ -38,11 +38,11 @@ const resolvers = {
       return { token, user };
       },
 
-    saveBook: async (parent, args, context) => {
+    saveBook: async (parent, { bookData }, context) => {
       if (context.user) {
         const updatedUser = await User.findByIdAndUpdate(
           { _id: context.user._id, },
-          { $push: {savedBooks: args.input, }, },
+          { $push: {savedBooks: bookData, }, },
           { new: true }
         );
 
@@ -50,11 +50,11 @@ const resolvers = {
       }
       throw new AuthenticationError('No user found with this email address');
     },
-    removeBook: async (parent, args, context) => {
+    removeBook: async (parent, { bookId }, context) => {
       if (context.user) {
         const updatedUser = await User.findByIdAndUpdate(
           { _id: context.user._id, },
-          { $pull: {savedBooks: args.bookId, }, },
+          { $pull: {savedBooks: { bookId } }, },
           { new: true }
         );
 
