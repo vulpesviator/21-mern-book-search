@@ -31,6 +31,38 @@ const resolvers = {
 
       return { token, user };
     },
+
+    addUser: async (parent, args, context) => {
+      const user = await User.create(args);
+      const token = signToken(user);
+      return { token, user };
+      },
+
+    saveBook: async (parent, args, context) => {
+      if (context.user) {
+        const updatedUser = await User.findByIdAndUpdate(
+          { _id: context.user._id, },
+          { $push: {savedBooks: args.input, }, },
+          { new: true }
+        );
+
+        return updatedUser;
+      }
+      throw new AuthenticationError('No user found with this email address');
+    },
+    removeBook: async (parent, args, context) => {
+      if (context.user) {
+        const updatedUser = await User.findByIdAndUpdate(
+          { _id: context.user._id, },
+          { $pull: {savedBooks: args.bookId, }, },
+          { new: true }
+        );
+
+        return updatedUser;
+      }
+      throw new AuthenticationError('No user found with this email address');
+    },
+    
   },
 };
 
